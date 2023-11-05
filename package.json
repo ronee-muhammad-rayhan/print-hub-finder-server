@@ -1,12 +1,27 @@
 {
   "name": "b8a11-server",
   "version": "1.0.0",
+  "description": "B8A11-Server-Side-CRUD-and-JWT-TheCarrerMaker-PrintHubFinder",
   "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "dev":"nodemon index.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "RoneeMRayhan <roneemrayhan@rayhanworld.com>",
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Porgramming-Hero-web-course/b8a11-server-side-ronee-muhammad-rayhan.git"
+  },
   "dependencies": {
     "cors": "^2.8.5",
     "dotenv": "^16.3.1",
     "express": "^4.18.2",
     "mongodb": "^6.2.0"
+  },
+  "devDependencies": {
+    "nodemon":"3.0.1"
   }
 }
