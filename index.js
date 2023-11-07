@@ -28,6 +28,12 @@ const client = new MongoClient(uri, {
   },
 });
 
+// custom middlewares
+const logger = async (req, res, next) => {
+  console.log("called", req.host, req.originalUrl);
+  next();
+};
+
 async function run() {
   try {
     // Connect the client to the server	(optional starting in v4.7)
@@ -40,7 +46,7 @@ async function run() {
       .collection("bookings");
 
     //auth related api
-    app.post("/jwt", async (req, res) => {
+    app.post("/jwt", logger, async (req, res) => {
       const user = req.body;
       console.log(user);
       const token = jwt.sign(user, process.env.ACCESS_TOKEN_SECRET, {
@@ -55,7 +61,7 @@ async function run() {
     });
 
     // services related apis
-    app.get("/services", async (req, res) => {
+    app.get("/services", logger, async (req, res) => {
       console.log("token fron browser cookie", req.cookies.token);
       const cursor = serviceCollection.find({});
       const services = await cursor.toArray();
