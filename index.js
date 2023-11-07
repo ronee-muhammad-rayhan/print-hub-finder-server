@@ -1,11 +1,12 @@
 const express = require("express");
 require("dotenv").config();
 const cors = require("cors");
+const jwt = require("jsonwebtoken");
 const { MongoClient, ServerApiVersion, ObjectId } = require("mongodb");
 const app = express();
 const port = process.env.PORT || 5003;
 
-// middleware
+// middlewares
 app.use(cors());
 app.use(express.json());
 
@@ -30,6 +31,14 @@ async function run() {
     const bookingCollection = client
       .db("PrinterHubFinderDB")
       .collection("bookings");
+
+    //auth related api
+    app.post("/jwt", async (req, res) => {
+      const user = req.body;
+      console.log(user);
+      const token = jwt.sign(user, "secret", { expiresIn: "1h" });
+      res.send(token);
+    });
 
     // services related apis
     app.get("/services", async (req, res) => {
