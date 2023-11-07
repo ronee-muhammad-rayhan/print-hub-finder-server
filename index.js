@@ -34,6 +34,25 @@ const logger = async (req, res, next) => {
   next();
 };
 
+const verifyToken = async (req, res, next) => {
+  const token = req.cookies?.token;
+  console.log("Token in the verifyToken middleware", token);
+  if (!token) {
+    return res.status(401).send({ message: "unauthenticated" });
+  }
+  jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, (err, decoded) => {
+    // error
+    if (err) {
+      console.log(err);
+      return res.status(401).send({ message: "not authenticated" });
+    }
+    // if token is valid then it would be decoded
+    console.log("value in the token", decoded);
+    req.user = decoded;
+    next();
+  });
+};
+
 async function run() {
   try {
     // Connect the client to the server	(optional starting in v4.7)
@@ -61,8 +80,12 @@ async function run() {
     });
 
     // services related apis
-    app.get("/services", logger, async (req, res) => {
+    app.get("/services", logger, verifyToken, async (req, res) => {
+      console.log("user in the valid token", req.user);
       console.log("token fron browser cookie", req.cookies.token);
+      if (req.query?.email !== req.user.email) {
+        return res.status(403).send({ message: "forbidden access" });
+      }
       const cursor = serviceCollection.find({});
       const services = await cursor.toArray();
       res.send(services);
@@ -132,7 +155,11 @@ async function run() {
     });
 
     // bookings related apis
-    app.get("/bookings", async (req, res) => {
+    app.get("/bookings", logger, verifyToken, async (req, res) => {
+      console.log("user in the valid token", req.user);
+      if (req.query?.email !== req.user.email) {
+        return res.status(403).send({ message: "forbidden access" });
+      }
       const cursor = bookingCollection.find({});
       const bookings = await cursor.toArray();
       res.status(200).send(bookings);
