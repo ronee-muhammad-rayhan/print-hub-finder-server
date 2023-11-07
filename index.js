@@ -30,7 +30,7 @@ const client = new MongoClient(uri, {
 
 // custom middlewares
 const logger = async (req, res, next) => {
-  console.log("called", req.host, req.originalUrl);
+  console.log("called", req.hostname, req.originalUrl);
   next();
 };
 
@@ -87,16 +87,22 @@ async function run() {
     });
 
     // services related apis
-    app.get("/services", logger, verifyToken, async (req, res) => {
-      console.log("user in the valid token", req.user);
-      console.log("token fron browser cookie", req.cookies.token);
-      if (req.query?.email !== req.user.email) {
-        return res.status(403).send({ message: "forbidden access" });
+    app.get(
+      "/services",
+      logger,
+      /* verifyToken, */ async (req, res) => {
+        console.log("user in the valid token", req?.user);
+        console.log("token fron browser cookie", req?.cookies?.token);
+        // console.log("queryEmail", req.query.email);
+        // console.log("reqEmail", req.user.email);
+        // if (req.query?.email !== req.user.email) {
+        //   return res.status(403).send({ message: "forbidden access" });
+        // }
+        const cursor = serviceCollection.find({});
+        const services = await cursor.toArray();
+        res.send(services);
       }
-      const cursor = serviceCollection.find({});
-      const services = await cursor.toArray();
-      res.send(services);
-    });
+    );
 
     app.get("/services/:id", async (req, res) => {
       const id = req.params.id;
@@ -209,6 +215,20 @@ async function run() {
       console.log(
         `${result.matchedCount} document(s) matched the filter, updated ${result.modifiedCount} document(s)`
       );
+    });
+
+    // My Survices API
+    app.get("/my-services", logger, verifyToken, async (req, res) => {
+      console.log("user in the valid token from my-services api", req.user);
+      console.log(req.query);
+      console.log("queryEmail", req.query.email);
+      console.log("reqEmail", req.user.email);
+      if (req.query?.email !== req.user.email) {
+        return res.status(403).send({ message: "forbidden access" });
+      }
+      const cursor = serviceCollection.find({ email: req.query?.email });
+      const services = await cursor.toArray();
+      res.status(200).send(services);
     });
 
     // Send a ping to confirm a successful connection
