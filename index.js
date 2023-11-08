@@ -80,7 +80,7 @@ async function run() {
         .send({ success: true });
     });
 
-    app.post("/logout", async (req, res) => {
+    app.post("/logout", logger, async (req, res) => {
       const user = req.body;
       console.log("logging out", user);
       res.clearCookie("token", { maxAge: 0 }).send({ success: true });
@@ -104,7 +104,7 @@ async function run() {
       }
     );
 
-    app.get("/services/:id", async (req, res) => {
+    app.get("/services/:id", logger, async (req, res) => {
       const id = req.params.id;
       const service = await serviceCollection.findOne({
         _id: new ObjectId(id),
@@ -112,7 +112,7 @@ async function run() {
       res.send(service);
     });
 
-    app.post("/services", async (req, res) => {
+    app.post("/services", logger, async (req, res) => {
       const newService = req.body;
       console.log(newService);
 
@@ -124,7 +124,7 @@ async function run() {
       res.send(result);
     });
 
-    app.put("/services/:id", async (req, res) => {
+    app.put("/services/:id", logger, async (req, res) => {
       const id = req.params.id;
       const filter = { _id: new ObjectId(id) };
       const options = { upsert: true };
@@ -157,7 +157,7 @@ async function run() {
       );
     });
 
-    app.delete("/services/:id", async (req, res) => {
+    app.delete("/services/:id", logger, async (req, res) => {
       const id = req.params.id;
       const doc = {
         selectedId: id,
@@ -210,7 +210,7 @@ async function run() {
       }
     );
 
-    app.post("/bookings", async (req, res) => {
+    app.post("/bookings", logger, async (req, res) => {
       const newBookingId = req.body;
       console.log(newBookingId);
 
@@ -222,7 +222,7 @@ async function run() {
       res.send(result);
     });
 
-    app.patch("/bookings/:id", async (req, res) => {
+    app.patch("/bookings/:id", logger, async (req, res) => {
       const id = req.params.id;
       const filter = { _id: new ObjectId(id) };
       // const options = { upsert: true };
@@ -301,7 +301,7 @@ async function run() {
       }
     );
 
-    app.delete("/services/:id", async (req, res) => {
+    app.delete("/services/:id", logger, async (req, res) => {
       const id = req.params.id;
       const doc = {
         selectedId: id,
@@ -323,7 +323,7 @@ async function run() {
 }
 run().catch(console.dir);
 
-app.get("/", (req, res) => {
+app.get("/", logger, (req, res) => {
   res.send("PrinterHubFinder server is running");
 });
 
