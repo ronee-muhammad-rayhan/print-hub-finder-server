@@ -173,10 +173,42 @@ async function run() {
       if (req.query?.email !== req.user.email) {
         return res.status(403).send({ message: "forbidden access" });
       }
-      const cursor = bookingCollection.find({});
+      const cursor = bookingCollection.find({
+        emailOfServiceReceiver: req.query?.email,
+      });
       const bookings = await cursor.toArray();
       res.status(200).send(bookings);
     });
+
+    app.get("/my-schedules/bookings", logger, verifyToken, async (req, res) => {
+      console.log("user in the valid token", req.user);
+      console.log("user in the query params", req.query);
+      if (req.query?.email !== req.user.email) {
+        return res.status(403).send({ message: "forbidden access" });
+      }
+      const cursor = bookingCollection.find({
+        emailOfServiceReceiver: req.query?.email,
+      });
+      const bookings = await cursor.toArray();
+      res.status(200).send(bookings);
+    });
+
+    app.get(
+      "/my-schedules/pending-works",
+      logger,
+      verifyToken,
+      async (req, res) => {
+        console.log("user in the valid token", req.user);
+        if (req.query?.email !== req.user.email) {
+          return res.status(403).send({ message: "forbidden access" });
+        }
+        const cursor = bookingCollection.find({
+          emailOfServiceProvider: req.query?.email,
+        });
+        const bookings = await cursor.toArray();
+        res.status(200).send(bookings);
+      }
+    );
 
     app.post("/bookings", async (req, res) => {
       const newBookingId = req.body;
