@@ -231,6 +231,54 @@ async function run() {
       res.status(200).send(services);
     });
 
+    app.put(
+      "/my-services/update/:id",
+      logger,
+      verifyToken,
+      async (req, res) => {
+        const id = req.params.id;
+        const filter = { _id: new ObjectId(id) };
+        const options = { upsert: true };
+        const updatedServiceClient = req.body;
+        const updatedService = {
+          $set: {
+            nameOfService: updatedServiceClient.name,
+            nameOfServiceProvider: updatedServiceClient.provider,
+            email: updatedServiceClient.email,
+            price: updatedServiceClient.price,
+            serviceArea: updatedServiceClient.serviceArea,
+            description: updatedServiceClient.description,
+            image: updatedServiceClient.image,
+          },
+        };
+
+        //   todo: patch here
+
+        // Update the first document that matches the filter
+        const result = await serviceCollection.updateOne(
+          filter,
+          updatedService,
+          options
+        );
+
+        res.send(result);
+        // Print the number of matching and modified documents
+        console.log(
+          `${result.matchedCount} document(s) matched the filter, updated ${result.modifiedCount} document(s)`
+        );
+      }
+    );
+
+    app.delete("/services/:id", async (req, res) => {
+      const id = req.params.id;
+      const doc = {
+        selectedId: id,
+      };
+      const deleteResult = await serviceCollection.deleteOne(doc);
+      console.dir(deleteResult.deletedCount);
+      res.send(deleteResult);
+    });
+
     // Send a ping to confirm a successful connection
     await client.db("admin").command({ ping: 1 });
     console.log(
