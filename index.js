@@ -10,15 +10,19 @@ const port = process.env.PORT || 5003;
 // middlewares
 app.use(
   cors({
+    // origin: "*",
+    // methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
+    // preflightContinue: false,
+    // optionsSuccessStatus: 204,
     origin: [
-      "http://localhost:5173",
+      // "http://localhost:5173",
       // "http://localhost:5174",
       // "https://b8a11-client-print-hub-finder.web.app/",
       // "https://b8a11-client-print-hub-finder.firebaseapp.com/",
-      // "https://b8a11-client-print-hub-finder.web.app/",
-      // "https://b8a11-client-print-hub-finder.firebaseapp.com/",
+      "https://b8a11-client-print-hub-finder.web.app",
+      "https://b8a11-client-print-hub-finder.firebaseapp.com/",
     ],
-    credentials: true,
+    credentials: true, //access-control-allow-credentials:true
     // optionSuccessStatus: 200,
   })
 );
